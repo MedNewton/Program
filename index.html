@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Med's Recomp Program</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: a gym logbook. Sticky tab bar, one column of session cards, plate-style set counters. */
+:root{
+  --bg:#f3f4f6; --surface:#ffffff; --ink:#151a22; --muted:#5b6473; --line:#dfe2e8;
+  --accent:#e2561b; --accent-ink:#ffffff; --soft:#fdebe2; --blue:#1f4e8c; --blue-soft:#e4ecf7;
+  --good:#1c7c4a; --warn:#a86a00;
+  --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1218; --surface:#181d26; --ink:#e9ecf1; --muted:#9aa3b2; --line:#2a313d;
+  --accent:#ff7a3d; --accent-ink:#1a0d05; --soft:#3a1f12; --blue:#8db4ec; --blue-soft:#1b2a40;
+  --good:#5cc98e; --warn:#e6b24c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1218; --surface:#181d26; --ink:#e9ecf1; --muted:#9aa3b2; --line:#2a313d;
+  --accent:#ff7a3d; --accent-ink:#1a0d05; --soft:#3a1f12; --blue:#8db4ec; --blue-soft:#1b2a40;
+  --good:#5cc98e; --warn:#e6b24c; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--ink)}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{background:var(--ink);color:var(--bg)}
+header.top .wrap{padding-block:22px 18px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(34px,8vw,52px);line-height:.95;margin:6px 0 10px;text-transform:uppercase;letter-spacing:.01em;text-wrap:balance}
+.stats{display:flex;flex-wrap:wrap;gap:6px 18px;font-family:var(--mono);font-size:12.5px;opacity:.85}
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+nav.tabs .wrap{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+nav.tabs button{font:600 15px var(--display);letter-spacing:.06em;text-transform:uppercase;background:none;border:0;color:var(--muted);padding:13px 12px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+main .wrap{padding-block:20px 60px;display:flex;flex-direction:column;gap:18px}
+h2{font-family:var(--display);font-weight:700;font-size:26px;text-transform:uppercase;letter-spacing:.02em;margin:8px 0 0;line-height:1.1}
+h3{font-family:var(--display);font-weight:700;font-size:19px;text-transform:uppercase;letter-spacing:.03em;margin:0}
+p{margin:0}
+.lead{font-size:16px}
+.muted{color:var(--muted)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.note{background:var(--blue-soft);border-radius:10px;padding:12px 14px;font-size:14px}
+.note.warm{background:var(--soft)}
+ul,ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+.phasebar{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.phasebar label{font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+select{font:500 15px var(--body);padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);max-width:100%}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{font:700 17px var(--display);letter-spacing:.05em;padding:8px 16px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.days{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
+.day{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:58px;padding:8px 6px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;font-family:var(--body)}
+.day .dw{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.day .dd{font:800 24px var(--display);line-height:1}
+.day .dm{font-size:11px;color:var(--muted)}
+.day.has{border-color:var(--accent)}
+.day[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.day[aria-selected="true"] .dw,.day[aria-selected="true"] .dm{color:var(--accent-ink)}
+.empty{border:1.5px dashed var(--line);border-radius:12px;padding:28px 16px;text-align:center;color:var(--muted)}
+.ex{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.ex summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:34px 1fr auto;gap:12px;align-items:center;padding:14px}
+.ex summary::-webkit-details-marker{display:none}
+.num{font:800 26px var(--display);color:var(--accent);text-align:center}
+.exname{font:700 19px var(--display);text-transform:uppercase;letter-spacing:.02em;line-height:1.1}
+.exmus{font-size:13px;color:var(--muted)}
+.rx{font-family:var(--mono);font-size:13px;text-align:right;white-space:nowrap}
+.rx b{display:block;font-size:16px;color:var(--ink)}
+.exbody{padding:0 14px 16px;display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--line);padding-top:14px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--mono);font-size:12px;padding:4px 9px;border-radius:6px;background:var(--bg);border:1px solid var(--line)}
+.chip.hot{background:var(--soft);border-color:transparent;color:var(--ink)}
+.kv{display:grid;grid-template-columns:110px 1fr;gap:6px 12px;font-size:14px}
+.kv dt{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding-top:3px}
+.kv dd{margin:0;min-width:0}
+@media (max-width:460px){.kv{grid-template-columns:1fr}.kv dt{padding-top:6px}}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+a.video{display:inline-flex;align-items:center;gap:8px;font:700 15px var(--display);letter-spacing:.06em;text-transform:uppercase;text-decoration:none;background:var(--ink);color:var(--bg);padding:9px 14px;border-radius:8px}
+a.video svg{width:16px;height:16px;fill:currentColor}
+.log{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.log input{width:92px;font:500 15px var(--mono);padding:7px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.flowstep{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:baseline}
+.tag{font-family:var(--mono);font-size:11px;padding:2px 7px;border-radius:5px;background:var(--blue-soft);color:var(--blue);white-space:nowrap}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.big{font:800 34px var(--display);line-height:1}
+.small{font-size:13px}
+footer{font-size:12.5px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top"><div class="wrap">
+  <div class="eyebrow">Body recomposition, 12-week block 1</div>
+  <h1>Med's Recomp Program</h1>
+  <div class="stats"><span>191 cm</span><span>115 kg start</span><span>2,150 kcal</span><span>185 g protein</span><span>3 sessions / week</span></div>
+</div></header>
+
+<nav class="tabs" aria-label="Sections"><div class="wrap" role="tablist">
+  <button role="tab" data-tab="train">Train</button>
+  <button role="tab" data-tab="plan">12 weeks</button>
+  <button role="tab" data-tab="food">Nutrition</button>
+  <button role="tab" data-tab="cardio">Walking</button>
+  <button role="tab" data-tab="goal">Goal</button>
+  <button role="tab" data-tab="timeline">Timeline</button>
+  <button role="tab" data-tab="track">Tracking</button>
+</div></nav>
+
+<main><div class="wrap">
+
+<!-- TRAIN -->
+<section data-panel="train">
+  <div class="panel">
+    <span class="eyebrow">Training days, every other day</span>
+    <div class="days" id="days" role="tablist" aria-label="Training dates"></div>
+  </div>
+  <div id="dayContent" style="display:flex;flex-direction:column;gap:12px"></div>
+</section>
+
+<!-- PLAN -->
+<section data-panel="plan" hidden>
+  <h2>12-week progression</h2>
+  <p class="lead">Effort rises slowly while volume climbs, then one easy week clears fatigue before the final push. You already know the lifts, so the first two weeks protect tendons and joints rather than teach technique.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Weeks</th><th>Phase</th><th>Sets</th><th>RIR</th><th>Focus</th></tr></thead>
+    <tbody>
+      <tr><td>1-2</td><td>Reconditioning</td><td>2 per exercise</td><td>3</td><td>Find working weights, let soreness settle, build the habit.</td></tr>
+      <tr><td>3-4</td><td>Adaptation</td><td>3 on main lifts, 2 on isolation</td><td>2</td><td>Lock in weights, start double progression, add straps for pulls.</td></tr>
+      <tr><td>5-8</td><td>Progressive overload</td><td>Full plan (18 to 21 per session)</td><td>1-2</td><td>Add reps then weight every week you can.</td></tr>
+      <tr><td>9</td><td>Deload</td><td>Half the sets</td><td>3-4</td><td>Same weights, half the work. Walk as usual.</td></tr>
+      <tr><td>10-12</td><td>Consolidation</td><td>Full plan, +1 set on lateral raises and incline press</td><td>1-2 (last set of isolation to 0-1)</td><td>Beat week 8 numbers. Test progress at week 12.</td></tr>
+    </tbody></table></div>
+  <div class="grid2">
+    <div class="panel"><h3>Choosing starting weights</h3>
+      <ol><li>Do a light set of 10 to feel the movement.</li><li>Add weight until 10 to 12 reps feel like you could do 3 more.</li><li>That is your week 1 weight. Write it down.</li><li>Too easy (could do 16+)? Go up next set. Too hard (form breaks before 8)? Go down.</li></ol>
+    </div>
+    <div class="panel"><h3>When you miss reps</h3>
+      <ul><li>Missed the bottom of the range once: keep the weight next session.</li><li>Missed it two sessions in a row: drop 5 to 10% and build back up.</li><li>Stuck 3 sessions on one lift with good sleep and food: swap to the listed alternative.</li></ul>
+    </div>
+    <div class="panel"><h3>Signs of too much fatigue</h3>
+      <ul><li>Lifts dropping two sessions in a row.</li><li>Sore for more than 72 hours, or joint aches.</li><li>Sleep worse, resting heart rate up 5+ bpm, no drive to train.</li></ul>
+      <p class="small">Two or more signs: cut sets by a third for one week. Still there: take the deload early.</p>
+    </div>
+    <div class="panel"><h3>Tracking progress</h3>
+      <ul><li>Log every set in an app such as Hevy or Strong, or the weight boxes on the Train tab.</li><li>Compare the same exercise week to week, not session to session.</li><li>At week 12, test a 10-rep set on chest press, pulldown, shoulder press and leg press against week 2.</li></ul>
+    </div>
+  </div>
+  <h2>Weekly volume (weeks 5-8)</h2>
+  <p>Direct sets count fully. Indirect sets are compound movements that also work the muscle, roughly worth half a set each. 8 to 12 direct weekly sets is the effective range for a returning lifter in a deficit; more would mostly add fatigue right now.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Muscle</th><th>Direct</th><th>Indirect</th><th>Comment</th></tr></thead>
+    <tbody>
+      <tr><td>Chest</td><td>9</td><td>5 (shoulder press)</td><td>Includes 3 upper-chest sets.</td></tr>
+      <tr><td>Back (lats, upper back)</td><td>11</td><td>3 (RDL, upper back)</td><td>Pulldown, two row types, rear delts.</td></tr>
+      <tr><td>Side delts</td><td>8</td><td>5 (presses)</td><td>Top priority. Rises to 10 in weeks 10-12.</td></tr>
+      <tr><td>Front delts</td><td>5</td><td>9 (chest pressing)</td><td>Plenty; no extra front raises needed.</td></tr>
+      <tr><td>Biceps</td><td>5</td><td>9 (pulldown, rows)</td><td>Enough while pulling is this frequent.</td></tr>
+      <tr><td>Triceps</td><td>4</td><td>14 (all pressing)</td><td>Heavily trained through presses.</td></tr>
+      <tr><td>Quads</td><td>6</td><td>0</td><td>Already strong; 6 keeps them growing.</td></tr>
+      <tr><td>Hamstrings</td><td>5</td><td>0</td><td>RDL plus leg curl.</td></tr>
+      <tr><td>Glutes</td><td>0</td><td>9 (leg press, hack, RDL)</td><td>Well covered by compounds.</td></tr>
+      <tr><td>Core and lower back</td><td>6</td><td>Bracing on all lifts</td><td>Anti-extension, anti-rotation, back extension.</td></tr>
+    </tbody></table></div>
+</section>
+
+<!-- FOOD -->
+<section data-panel="food" hidden>
+  <h2>Nutrition</h2>
+  <p class="lead">Keep your 2,100 to 2,200 kcal plan. It is a deficit of about 650 to 800 kcal a day, fast enough to shrink the belly and gentle enough to keep strength rising. Going lower, like 1,600 to 1,700 kcal, would cost upper-body muscle and training quality.</p>
+  <div class="grid2">
+    <div class="panel"><span class="eyebrow">BMR</span><span class="big">2,185</span><span class="small muted">kcal, Mifflin-St Jeor estimate</span></div>
+    <div class="panel"><span class="eyebrow">TDEE</span><span class="big">2,850-3,000</span><span class="small muted">kcal with 3 sessions and 7,000-8,000 steps (about 2,600 fully sedentary)</span></div>
+  </div>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Daily target</th><th>Amount</th><th>kcal</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><b>Calories</b></td><td>2,150 (2,100-2,200)</td><td></td><td>Protein shakes included. Same every day.</td></tr>
+      <tr><td>Protein</td><td>180-190 g</td><td>720-760</td><td>About 1.8-2 g per kg of target weight. 200 g is fine but not needed.</td></tr>
+      <tr><td>Fat</td><td>65-75 g</td><td>585-675</td><td>Never under 60 g; supports hormones.</td></tr>
+      <tr><td>Carbs</td><td>180-220 g</td><td>720-880</td><td>The rest. Put a good share before and after training.</td></tr>
+      <tr><td>Fiber</td><td>35-45 g</td><td></td><td>Vegetables, oats, legumes, fruit, psyllium. Raise slowly.</td></tr>
+      <tr><td>Water</td><td>3.5-4 L</td><td></td><td>More on training days and in heat. Pale yellow urine.</td></tr>
+    </tbody></table></div>
+  <div class="grid2">
+    <div class="panel"><h3>Expected loss</h3>
+      <ul><li>Weeks 1-2: 2 to 4 kg, mostly water and glycogen. Change nothing.</li><li>Week 3 on: 0.5 to 0.9 kg per week on average. Judge 2 to 3 week averages, not single weeks.</li></ul></div>
+    <div class="panel"><h3>Training vs rest days</h3>
+      <p>Same calories every day. If you want, move 30 to 50 g of carbs from rest days to training days and keep the weekly total equal. At your stage the difference is tiny.</p></div>
+  </div>
+  <div class="panel"><h3>Adjusting from real data only</h3>
+    <div class="tablewrap" style="border:0"><table>
+      <thead><tr><th>If this happens</th><th>Do this</th></tr></thead>
+      <tbody>
+        <tr><td>Losing 0.5-0.9 kg/week and getting stronger</td><td>Change nothing, even as weight drops.</td></tr>
+        <tr><td>Under 0.3 kg/week for 3 weeks, good adherence</td><td>Add 2,000 daily steps first. Still stalled 2 more weeks: cut 150 kcal.</td></tr>
+        <tr><td>Over 1 kg/week after week 4, lifts dropping</td><td>Add 150 kcal.</td></tr>
+        <tr><td>Hungry, flat, sleeping badly for 2+ weeks</td><td>Eat at maintenance (about 2,800) for 1 to 2 weeks, then resume.</td></tr>
+      </tbody></table></div>
+    <p class="small muted">Floor: 1,900 kcal while training 3 times a week.</p>
+  </div>
+  <div class="panel"><h3>Keeping muscle in a deficit</h3>
+    <ul>
+      <li>Progressive lifting 3 times a week is the main signal. Never skip it to save energy.</li>
+      <li>3 to 4 protein meals of 40 to 50 g each.</li>
+      <li>Creatine monohydrate 3 to 5 g daily, any time. Expect 1 to 2 kg of water weight early on.</li>
+      <li>Sleep 7 to 8 hours. Short sleep shifts more of the loss toward muscle.</li>
+      <li>Normal salt. Cutting it hard hurts training on a high-water, high-fiber diet.</li>
+    </ul></div>
+  <div class="note warm"><b>Ramadan (expected around February to March 2027):</b> train after iftar, keep protein at 180 g across iftar and suhoor, and accept maintenance-level progress for that month.</div>
+</section>
+
+<!-- CARDIO -->
+<section data-panel="cardio" hidden>
+  <h2>Walking plan</h2>
+  <p class="lead">Steps do more for fat loss than extra cardio sessions, and incline treadmill walking is easy on the joints at 115 kg. No running needed.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Weeks</th><th>Daily steps</th><th>Gym days</th><th>Rest days</th></tr></thead>
+    <tbody>
+      <tr><td>1-2</td><td>6,000</td><td>10 min incline walk after lifting</td><td>20-25 min treadmill</td></tr>
+      <tr><td>3-4</td><td>7,000</td><td>10-15 min</td><td>30 min</td></tr>
+      <tr><td>5-8</td><td>8,000</td><td>15 min</td><td>30-40 min</td></tr>
+      <tr><td>9-12</td><td>8,000-10,000</td><td>15 min</td><td>40 min</td></tr>
+    </tbody></table></div>
+  <div class="grid2">
+    <div class="panel"><h3>Intensity</h3><p>Incline 5 to 10%, speed 4.5 to 5.5 km/h. You can talk in full sentences but would not want to sing. Heart rate roughly 110 to 135 bpm. Do not hold the rails.</p></div>
+    <div class="panel"><h3>Making it easy</h3><ul><li>Treadmill with a series or podcast; you said walking alone outside is not your thing.</li><li>Stand or walk 5 minutes every hour at your desk.</li><li>Take calls while walking.</li></ul></div>
+  </div>
+  <div class="note">Add more cardio only if fat loss stalls and steps are already at 10,000. Then add one 30 min session of bike or elliptical, before cutting food further.</div>
+</section>
+
+<!-- GOAL -->
+<section data-panel="goal" hidden>
+  <h2>Target and starting point</h2>
+  <p class="lead">Aim for a waist under 95 cm, not a scale number. For you that will most likely land between 98 and 103 kg. Treat 100 kg as a checkpoint.</p>
+  <div class="panel"><h3>Why waist beats weight</h3>
+    <p>Waist-to-height ratio under 0.5 is the best simple marker of low visceral fat and metabolic risk. At 191 cm that means a waist under 95.5 cm. The scale cannot tell 3 kg of fat lost plus 2 kg of muscle gained from 1 kg of fat lost; your waist can.</p></div>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Weight</th><th>Likely look at 191 cm</th><th>Verdict</th></tr></thead>
+    <tbody>
+      <tr><td>105 kg</td><td>Still a clear belly unless you gain a lot of muscle first</td><td>Checkpoint</td></tr>
+      <tr><td>100 kg</td><td>Solid dad bod with some softness, if strength rose during the cut</td><td>Most likely target</td></tr>
+      <tr><td>95 kg</td><td>Leaner and athletic, but needs more muscle than you have now to not look thin</td><td>Optional later</td></tr>
+    </tbody></table></div>
+  <div class="grid2">
+    <div class="panel"><h3>Stop cutting when two are true</h3>
+      <ul><li>Waist at or under 95 cm.</li><li>You like how you look in a T-shirt.</li><li>Strength stalled 3+ weeks despite good sleep and food.</li><li>16 to 20 weeks of dieting in a row: take 4 weeks at maintenance, then decide.</li></ul></div>
+    <div class="panel"><h3>Your advantages</h3>
+      <ul><li>Muscle memory: lost muscle returns much faster than it was first built.</li><li>Overweight plus untrained: you can lose fat and gain muscle at the same time for months.</li><li>Strong legs and excellent diet discipline.</li></ul></div>
+  </div>
+  <div class="panel"><h3>Chest: fat or gland?</h3>
+    <p>Chest training builds the muscle under the fat; it cannot burn chest fat. Your description fits pseudogynecomastia, which mostly resolves with fat loss. Areolas usually shrink somewhat as fat goes.</p>
+    <p><b>Monthly self-check:</b> pinch directly under the nipple. Soft tissue like belly fat is fat. A firm, rubbery disc of 2 cm or more right under the areola suggests gland, which diet does not remove. If it is still there once your waist is under 100 cm, see a doctor; an ultrasound settles it.</p></div>
+  <div class="note warm"><b>Recommended blood test before or soon after starting:</b> fasting glucose and HbA1c, lipid panel, liver enzymes, TSH, testosterone, estradiol, prolactin, plus blood pressure. Repeat at month 6. A muscular look does not guarantee good metabolic health.</div>
+  <div class="note"><b>Still missing:</b> your waist at the navel, measured relaxed in the morning before eating. Add it to the Tracking tab and it sets your real target.</div>
+</section>
+
+<!-- TIMELINE -->
+<section data-panel="timeline" hidden>
+  <h2>Realistic timeline</h2>
+  <p class="lead">These are ranges, not promises. "Likely" assumes about 85% adherence with normal life getting in the way; "optimistic" assumes near-perfect weeks.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>When</th><th>Likely weight</th><th>Optimistic</th><th>Waist</th><th>What you will notice</th></tr></thead>
+    <tbody>
+      <tr><td><b>Month 1</b><br><span class="small muted">late Nov</span></td><td>110-112 kg</td><td>109 kg</td><td>-4 to -7 cm</td><td>Strength up 20-40% from muscle memory. Clothes looser. Shoulders and arms feel firmer, little visible change yet.</td></tr>
+      <tr><td><b>Month 3</b><br><span class="small muted">late Jan</span></td><td>105-108 kg</td><td>103-104 kg</td><td>-8 to -12 cm</td><td>Belly clearly smaller. Shoulders start to show in a T-shirt. Chest softer and flatter. Main lifts 50-80% above week 1.</td></tr>
+      <tr><td><b>Month 6</b><br><span class="small muted">late Apr</span></td><td>100-104 kg</td><td>98-100 kg</td><td>-12 to -18 cm</td><td>The real turning point. Broader look, visibly thicker arms, chest reads as muscle. Time for the gland self-check and blood test.</td></tr>
+      <tr><td><b>Month 9</b></td><td>97-102 kg</td><td>95-97 kg</td><td>Near 95 cm</td><td>Likely moving to maintenance. Dad-bod shape established; strength still rising more slowly.</td></tr>
+      <tr><td><b>Month 12</b></td><td>98-103 kg</td><td>97-100 kg</td><td>Stable</td><td>Holding weight with more muscle. Realistic lean gain over the year about 2-4 kg on top of what returned from muscle memory.</td></tr>
+      <tr><td><b>Month 18</b></td><td>100-105 kg</td><td>Same</td><td>Stable or slightly up</td><td>After a slow lean gain phase: noticeably bigger shoulders, chest and arms at a healthy waist.</td></tr>
+    </tbody></table></div>
+  <p class="small muted">Waist changes are rough guides, about 0.7 to 1 cm per kg lost early on. Your own measurements replace these numbers after the first month.</p>
+</section>
+
+<!-- TRACK -->
+<section data-panel="track" hidden>
+  <h2>Tracking system</h2>
+  <p class="lead">Five minutes a week tells you exactly what to change. Without it you are guessing.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>What</th><th>How often</th><th>How</th></tr></thead>
+    <tbody>
+      <tr><td>Body weight</td><td>Daily, use the weekly average</td><td>After waking and the toilet, before food or water.</td></tr>
+      <tr><td>Waist</td><td>Weekly</td><td>At the navel, relaxed, same morning conditions.</td></tr>
+      <tr><td>Chest</td><td>Every 2 weeks</td><td>Across the nipples, arms down, relaxed.</td></tr>
+      <tr><td>Upper arms</td><td>Every 2 weeks</td><td>Both arms, flexed at the widest point. Tracks the left-right gap.</td></tr>
+      <tr><td>Photos</td><td>Monthly</td><td>Front, side, back. Same light, place, time and clothes.</td></tr>
+      <tr><td>Strength</td><td>Every session</td><td>Weight and reps per set in your log.</td></tr>
+      <tr><td>Sleep, energy, soreness</td><td>Daily, 1 to 5</td><td>One line in your notes.</td></tr>
+      <tr><td>Diet adherence</td><td>Daily</td><td>Hit calories and protein: yes or no.</td></tr>
+    </tbody></table></div>
+  <div class="panel"><h3>When to change what</h3>
+    <div class="tablewrap" style="border:0"><table>
+      <thead><tr><th>Change</th><th>Trigger</th></tr></thead>
+      <tbody>
+        <tr><td>Calories</td><td>Weekly average stalls 3 weeks with steps already raised, or loss above 1 kg/week with lifts dropping (Nutrition tab).</td></tr>
+        <tr><td>Protein</td><td>Keep 180-190 g during the cut. Drop to 160-180 g at maintenance.</td></tr>
+        <tr><td>Training volume</td><td>Add a set to a muscle that feels fresh and is progressing slowly 3 weeks in a row. Remove one if two fatigue signs show.</td></tr>
+        <tr><td>Cardio</td><td>Only after steps reach 10,000 and loss still stalls.</td></tr>
+        <tr><td>Exercise</td><td>No progress in 3 sessions, or any joint pain: switch to the listed alternative.</td></tr>
+      </tbody></table></div></div>
+  <h2>After the cut</h2>
+  <div class="panel">
+    <ol>
+      <li><b>Reverse to maintenance:</b> add 100 to 150 kcal per week until weight holds steady, likely around 2,700 to 2,900 kcal at 100 kg.</li>
+      <li><b>Keep the habits:</b> weigh daily, train 3 times a week, 8,000+ steps, protein 160 to 180 g.</li>
+      <li><b>Set a ceiling:</b> if the weekly average rises 2 kg above your lowest, return to the cut calories for 3 to 4 weeks.</li>
+      <li><b>Lean gain later:</b> once maintenance is comfortable for 2 to 3 months, eat 200 to 300 kcal above it and gain about 0.25 kg per month, stopping if the waist grows more than 2 cm.</li>
+      <li><b>The real risk:</b> most regain comes from switching back to old eating all at once, especially heavy sugar. Add foods back gradually and keep the scale in the routine.</li>
+    </ol>
+  </div>
+</section>
+
+<footer>Educational plan based on general evidence; not medical advice. Stop any exercise that causes sharp pain.</footer>
+</div></main>
+
+<script>
+const ex = {
+A:[
+ {n:"Machine chest press",m:"Chest, front delts, triceps",s:[2,3,3,2,3],r:"8-12",rest:"2 min",rir:"2",
+  how:"Seat so handles line up with mid-chest. Shoulder blades back and down into the pad, slight arch. Press without letting shoulders roll forward.",
+  bad:"Seat too high, elbows flared to 90°, short reps.",alt:"Dumbbell flat bench press from week 5.",
+  prog:"All sets at 12 reps at RIR 2, then +2.5 to 5 kg.",q:"machine chest press proper form"},
+ {n:"Lat pulldown",m:"Lats, upper back, biceps",s:[2,3,3,2,3],r:"8-12",rest:"2 min",rir:"2",
+  how:"Grip a bit wider than shoulders, or the neutral V-handle if wrists complain. Chest up, lean back 10 to 15°. Drive elbows down to your back pockets until the bar reaches upper chest.",
+  bad:"Pulling with arms only, swinging the torso, bar behind the neck.",alt:"Machine pulldown with separate handles, left arm leads.",
+  prog:"3 × 12, then +2.5 to 5 kg.",q:"lat pulldown proper form"},
+ {n:"Seated dumbbell shoulder press",m:"Side and front delts, triceps",s:[2,2,2,1,2],r:"8-12",rest:"2 min",rir:"2",
+  how:"Bench at 75 to 80°. Dumbbells start at ear level, forearms vertical, palms forward or slightly turned in. Press up and slightly in.",
+  bad:"Arching the lower back, dumbbells drifting forward, half reps.",alt:"Machine shoulder press (use it in weeks 1-2).",
+  prog:"2 × 12, then +1 to 2 kg per dumbbell.",q:"seated dumbbell shoulder press form"},
+ {n:"Leg press",m:"Quads, glutes",s:[2,3,3,2,3],r:"10-15",rest:"2 min",rir:"2",
+  how:"Feet shoulder-width, mid-platform. Lower to about 90° at the knee or just before your lower back lifts. Push through the whole foot.",
+  bad:"Lower back rounding at the bottom, knees caving in, locking knees hard.",alt:"Hack squat or goblet squat.",
+  prog:"3 × 15, then +10 kg. Legs will progress fastest; that is fine.",q:"leg press proper form"},
+ {n:"Single-arm cable lateral raise",m:"Side delts",s:[2,2,3,2,3],r:"12-20 each",rest:"1 min",rir:"1-2",
+  how:"Cable at the lowest setting, stand side-on. Raise the arm out to shoulder height leading with the elbow, slight bend. Lower in 3 seconds. Left arm first.",
+  bad:"Shrugging, swinging, going too heavy. Light weight is normal here.",alt:"Dumbbell lateral raise or lateral raise machine.",
+  prog:"All sets at 20 reps, then next pin.",q:"single arm cable lateral raise form"},
+ {n:"Cable rope pushdown",m:"Triceps",s:[2,2,2,1,2],r:"10-15",rest:"1 min",rir:"1-2",
+  how:"Elbows pinned at your sides. Push down and spread the rope at the bottom. Wrists straight.",
+  bad:"Elbows drifting forward, leaning over the rope.",alt:"Straight-bar or V-bar pushdown.",
+  prog:"2 × 15, then next pin.",q:"cable rope tricep pushdown form"},
+ {n:"Dead bug",m:"Deep core",s:[2,2,2,1,2],r:"8 each side",rest:"1 min",rir:"Slow",
+  how:"On your back, arms to the ceiling, knees at 90°. Press lower back into the floor, slowly extend opposite arm and leg while exhaling.",
+  bad:"Lower back lifting off the floor, rushing.",alt:"Hollow body hold for 20 s.",
+  prog:"Add a 2 s hold at full extension, then hold a light plate.",q:"dead bug exercise proper form"}
+],
+B:[
+ {n:"Incline dumbbell press",m:"Upper chest, front delts, triceps",s:[2,3,3,2,4],r:"8-12",rest:"2 min",rir:"2",
+  how:"Bench at 30°. Dumbbells over upper chest, palms forward or slightly turned in. Lower to chest level with elbows at about 45° from the body, press up and slightly in.",
+  bad:"Bench too steep (turns into shoulder press), bouncing at the bottom, wrists bent back.",alt:"Incline machine press.",
+  prog:"All sets at 12, then +1 to 2 kg per dumbbell.",q:"incline dumbbell press proper form"},
+ {n:"Chest-supported row",m:"Upper back, lats, rear delts",s:[2,3,3,2,3],r:"8-12",rest:"2 min",rir:"2",
+  how:"Chest on the pad, neutral grip. Pull elbows back past your torso, squeeze shoulder blades together for 1 second, lower fully.",
+  bad:"Lifting chest off the pad, shrugging, jerking the weight.",alt:"Seated cable row with V-handle, or T-bar row.",
+  prog:"3 × 12, then +2.5 to 5 kg. Straps from week 3 if grip fades.",q:"chest supported row machine form"},
+ {n:"Dumbbell Romanian deadlift",m:"Hamstrings, glutes, lower back",s:[2,3,3,2,3],r:"8-10",rest:"2-3 min",rir:"2-3",
+  how:"Soft knees, push hips back, dumbbells slide down the front of the thighs. Stop when you feel a strong hamstring stretch, usually mid-shin. Back flat throughout.",
+  bad:"Rounding the back, bending the knees into a squat, going too low.",alt:"45° back extension, or machine hip hinge.",
+  prog:"3 × 10 at RIR 2, then +2 kg per dumbbell. Use straps; thin wrists should not limit this lift.",q:"dumbbell romanian deadlift form"},
+ {n:"Seated leg curl",m:"Hamstrings",s:[2,2,2,1,2],r:"10-15",rest:"1.5 min",rir:"1-2",
+  how:"Pad just above the heels, thigh pad tight. Curl fully, pause, lower in 3 seconds.",
+  bad:"Hips lifting, partial range, fast lowering.",alt:"Lying leg curl.",
+  prog:"2 × 15, then next pin.",q:"seated leg curl proper form"},
+ {n:"Dumbbell lateral raise",m:"Side delts",s:[2,2,3,2,4],r:"12-20",rest:"1 min",rir:"1-2",
+  how:"Slight forward lean, slight elbow bend. Raise out to the sides to shoulder height, pinkies level with thumbs. Lower in 3 seconds.",
+  bad:"Swinging, shrugging, lifting above shoulder height with momentum.",alt:"Lateral raise machine.",
+  prog:"All sets at 20, then +1 kg per dumbbell.",q:"dumbbell lateral raise proper form"},
+ {n:"Incline dumbbell curl",m:"Biceps",s:[2,2,3,2,3],r:"10-15",rest:"1 min",rir:"1-2",
+  how:"Bench at 45 to 60°, arms hanging straight down. Curl one arm at a time, left first, without moving the elbow forward. Lower fully.",
+  bad:"Swinging, elbows drifting forward, cutting the bottom of the rep.",alt:"EZ-bar cable curl (easier on the wrists).",
+  prog:"All sets at 15, then +1 to 2 kg.",q:"incline dumbbell curl form"},
+ {n:"Pallof press",m:"Core anti-rotation",s:[2,2,2,1,2],r:"10 each side",rest:"1 min",rir:"Controlled",
+  how:"Cable at chest height, stand side-on. Hold the handle at your chest, press straight out, hold 2 seconds, return. Resist the cable pulling you around.",
+  bad:"Twisting toward the cable, standing too close.",alt:"Side plank 20 to 30 s.",
+  prog:"Step farther from the stack, then next pin.",q:"pallof press proper form"}
+],
+C:[
+ {n:"Machine shoulder press",m:"Side and front delts, triceps",s:[2,3,3,2,3],r:"8-12",rest:"2 min",rir:"2",
+  how:"Handles start at shoulder height. Back flat on the pad, press straight up without locking out hard.",
+  bad:"Arching away from the pad, shrugging at the top.",alt:"Seated dumbbell shoulder press.",
+  prog:"3 × 12, then +2.5 to 5 kg.",q:"machine shoulder press proper form"},
+ {n:"Single-arm cable row",m:"Lats, upper back",s:[2,3,3,2,3],r:"10-12 each",rest:"1.5 min",rir:"2",
+  how:"Cable at waist height, staggered stance or seated. Pull the elbow back toward the hip, keep the torso still. Left arm first; right matches its reps.",
+  bad:"Rotating the torso to cheat, shrugging.",alt:"Single-arm dumbbell row on a bench.",
+  prog:"All sets at 12, then next pin.",q:"single arm cable row form"},
+ {n:"Cable fly or pec deck",m:"Chest",s:[2,2,3,2,3],r:"12-15",rest:"1.5 min",rir:"1-2",
+  how:"Slight bend in the elbows, fixed. Bring hands together in a hugging arc, squeeze 1 second, open until you feel a chest stretch.",
+  bad:"Turning it into a press, going too heavy, overstretching the shoulder.",alt:"Pec deck machine.",
+  prog:"All sets at 15, then next pin.",q:"cable chest fly proper form"},
+ {n:"Hack squat",m:"Quads, glutes",s:[2,3,3,2,3],r:"8-12",rest:"2 min",rir:"2",
+  how:"Feet shoulder-width, mid-platform. Lower under control to at least parallel, drive up through the whole foot.",
+  bad:"Heels lifting, knees caving, bouncing at the bottom.",alt:"Smith machine squat or goblet squat.",
+  prog:"3 × 12, then +5 to 10 kg.",q:"hack squat machine proper form"},
+ {n:"Machine lateral raise",m:"Side delts",s:[2,2,2,1,3],r:"12-20",rest:"1 min",rir:"1",
+  how:"Pads on the outside of the arms, handles light in the hands. Raise to shoulder height, pause, lower in 3 seconds.",
+  bad:"Shrugging, using momentum.",alt:"Cable lateral raise.",
+  prog:"All sets at 20, then next pin.",q:"machine lateral raise form"},
+ {n:"Reverse pec deck",m:"Rear delts, upper back",s:[2,2,2,1,2],r:"12-20",rest:"1 min",rir:"1-2",
+  how:"Face the pad, neutral grip, arms slightly bent. Open wide until arms are in line with the body. Good for posture after long desk days.",
+  bad:"Squeezing the shoulder blades instead of moving the arms, going too heavy.",alt:"Cable rear delt fly.",
+  prog:"All sets at 20, then next pin.",q:"reverse pec deck rear delt form"},
+ {n:"Overhead cable triceps extension",m:"Triceps (long head)",s:[2,2,2,1,2],r:"10-15",rest:"Superset with next",rir:"1-2",
+  how:"Rope on a low cable, face away. Elbows up by your head, extend overhead, lower until you feel the stretch. Do it, then go straight to hammer curls, then rest 1.5 min.",
+  bad:"Elbows flaring wide, arching the lower back.",alt:"Seated dumbbell overhead extension.",
+  prog:"2 × 15, then next pin.",q:"overhead cable tricep extension rope form"},
+ {n:"Hammer curl",m:"Biceps, brachialis, forearms",s:[2,2,2,1,2],r:"10-15",rest:"1.5 min after superset",rir:"1-2",
+  how:"Palms facing each other, elbows at your sides. Curl, pause, lower slowly. Left arm first if alternating. Builds the forearm thickness thin wrists benefit from.",
+  bad:"Swinging, elbows moving forward.",alt:"Rope cable hammer curl.",
+  prog:"All sets at 15, then +1 to 2 kg.",q:"dumbbell hammer curl proper form"},
+ {n:"45° back extension",m:"Lower back, glutes, hamstrings",s:[2,2,2,1,2],r:"10-15",rest:"1 min",rir:"2",
+  how:"Hips on the pad, body straight. Lower with a flat back, rise to a straight line, never past it.",
+  bad:"Hyperextending at the top, rushing.",alt:"Bird dog 10 each side.",
+  prog:"Hold a plate at your chest once 15 reps is easy.",q:"45 degree back extension proper form"}
+]};
+const rules=`<div class="panel"><h3>Rules for every exercise</h3><ul>
+<li><b>RIR</b> = reps in reserve. RIR 3 means you stop when you could still do 3 more clean reps.</li>
+<li><b>Starting weights:</b> a light set of 10 first, then add weight until 10 to 12 reps feel like 3 more were possible. Too easy (16+)? Go up next set.</li>
+<li><b>Tempo:</b> about 1 second up, 2 to 3 seconds down. No bouncing.</li>
+<li><b>Left arm leads:</b> on single-arm work start with the left; the right does the same reps.</li>
+<li><b>Wrists:</b> straight and stacked over the forearm, neutral grips where offered.</li>
+<li><b>Write every weight down</b> in the box under each exercise so the next session starts from real numbers.</li></ul></div>`;
+const plan={"2026-10-24":{title:"Session A",week:"Week 1, day 1: Reconditioning",note:"2 sets per exercise at RIR 3. Goal today: find your starting weights. Leave feeling you could do it all again.",phase:0,session:"A",
+ warm:"5 min treadmill walk, then 1 light set of 12 on the chest press.",finish:"10 min incline treadmill walk: incline 6-8%, speed where you can still talk."}};
+const play='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const dates=[];{const d=new Date(2026,9,24);for(let i=0;i<16;i++){dates.push(new Date(d));d.setDate(d.getDate()+2)}}
+const todayIso=iso(new Date());
+let sel=(dates.find(d=>iso(d)>=todayIso)&&iso(dates.find(d=>iso(d)>=todayIso)))||iso(dates[0]);
+function exCards(p){const rir=p.phase===0?"3":null;
+ return ex[p.session].map((e,i)=>{const id=p.session+i,sets=e.s[p.phase],r=(rir&&/^\d/.test(e.rir))?rir:e.rir;
+  const url="https://www.youtube.com/results?search_query="+encodeURIComponent(e.q);
+  return `<details class="ex"${i===0?" open":""}><summary><span class="num">${i+1}</span>
+   <span style="min-width:0"><span class="exname">${esc(e.n)}</span><br><span class="exmus">${esc(e.m)}</span></span>
+   <span class="rx"><b>${sets} × ${esc(e.r)}</b>RIR ${esc(r)}</span></summary>
+   <div class="exbody"><div class="chips"><span class="chip hot">${sets} sets</span><span class="chip">${esc(e.r)} reps</span><span class="chip">Rest ${esc(e.rest)}</span><span class="chip">RIR ${esc(r)}</span></div>
+   <dl class="kv"><dt>Technique</dt><dd>${esc(e.how)}</dd><dt>Avoid</dt><dd>${esc(e.bad)}</dd><dt>Alternative</dt><dd>${esc(e.alt)}</dd><dt>Increase when</dt><dd>${esc(e.prog)}</dd></dl>
+   <div class="actions"><a class="video" href="${url}" target="_blank" rel="noopener">${play}Watch demo</a>
+   <label class="log" for="w-${id}">Last weight <input id="w-${id}" data-k="w-${id}" inputmode="decimal" placeholder="kg" value="${esc(store.get("w-"+id)||"")}"></label></div></div></details>`}).join("")}
+function render(){
+ document.getElementById("days").innerHTML=dates.map(d=>{const k=iso(d);
+  return `<button class="day${plan[k]?" has":""}" role="tab" aria-selected="${k===sel}" data-d="${k}"><span class="dw">${d.toLocaleDateString("en-GB",{weekday:"short"})}</span><span class="dd">${d.getDate()}</span><span class="dm">${d.toLocaleDateString("en-GB",{month:"short"})}</span></button>`}).join("");
+ document.querySelectorAll(".day").forEach(b=>b.addEventListener("click",()=>{sel=b.dataset.d;render()}));
+ const p=plan[sel],c=document.getElementById("dayContent");
+ const label=new Date(sel+"T12:00:00").toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"});
+ if(!p){c.innerHTML=`<h2>${label}</h2><div class="empty"><h3>Session not added yet</h3><p class="small">This day's workout will be added later.</p></div>`;return}
+ c.innerHTML=`<h2>${label}: ${esc(p.title)}</h2><p class="muted">${esc(p.week)}</p>
+  <div class="note">${esc(p.note)}</div>
+  <div class="panel"><h3>Warm-up</h3><p>${esc(p.warm)}</p></div>
+  ${exCards(p)}
+  <div class="panel"><h3>Finish</h3><p>${esc(p.finish)}</p></div>${rules}`;
+ c.querySelectorAll("input[data-k]").forEach(inp=>inp.addEventListener("input",()=>store.set(inp.dataset.k,inp.value)));
+ const s=document.querySelector('.day[aria-selected="true"]');if(s)s.scrollIntoView({block:"nearest",inline:"center"});
+}
+const tabs=[...document.querySelectorAll("nav.tabs button")];
+function show(t){if(!document.querySelector(`[data-panel="${t}"]`))t="train";
+  tabs.forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t));
+  document.querySelectorAll("[data-panel]").forEach(p=>p.hidden=p.dataset.panel!==t);
+  document.querySelector("[data-panel="+t+"]").style.display="flex";
+  document.querySelectorAll("[data-panel]").forEach(p=>{if(p.hidden)p.style.display="";else{p.style.flexDirection="column";p.style.gap="16px"}});}
+tabs.forEach(b=>b.addEventListener("click",()=>{show(b.dataset.tab);window.scrollTo(0,0)}));
+render();show((location.hash||"").slice(1)||"train");
+</script>
+</body>
+</html>
