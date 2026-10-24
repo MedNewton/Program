@@ -165,7 +165,7 @@ footer{font-size:12.5px;color:var(--muted)}
     <thead><tr><th>Muscle</th><th>Direct</th><th>Indirect</th><th>Comment</th></tr></thead>
     <tbody>
       <tr><td>Chest</td><td>9</td><td>5 (shoulder press)</td><td>Includes 3 upper-chest sets.</td></tr>
-      <tr><td>Back (lats, upper back)</td><td>11</td><td>3 (RDL, upper back)</td><td>Pulldown, two row types, rear delts.</td></tr>
+      <tr><td>Back (lats, upper back)</td><td>15</td><td>3 (RDL, upper back)</td><td>Pulldown, two row types, rear delts, face pulls (added for posture).</td></tr>
       <tr><td>Side delts</td><td>8</td><td>5 (presses)</td><td>Top priority. Rises to 10 in weeks 10-12.</td></tr>
       <tr><td>Front delts</td><td>5</td><td>9 (chest pressing)</td><td>Plenty; no extra front raises needed.</td></tr>
       <tr><td>Biceps</td><td>5</td><td>9 (pulldown, rows)</td><td>Enough while pulling is this frequent.</td></tr>
@@ -238,6 +238,15 @@ footer{font-size:12.5px;color:var(--muted)}
   <div class="grid2">
     <div class="panel"><h3>Intensity</h3><p>Incline 5 to 10%, speed 4.5 to 5.5 km/h. You can talk in full sentences but would not want to sing. Heart rate roughly 110 to 135 bpm. Do not hold the rails.</p></div>
     <div class="panel"><h3>Making it easy</h3><ul><li>Treadmill with a series or podcast; you said walking alone outside is not your thing.</li><li>Stand or walk 5 minutes every hour at your desk.</li><li>Take calls while walking.</li></ul></div>
+  </div>
+  <div class="panel"><h3>Daily mobility, 5 minutes</h3>
+    <p class="small muted">Added after your photos: counters rounded shoulders and the forward head from long desk days. Do it every day, ideally after work or after the gym.</p>
+    <ol>
+      <li><b>Doorway chest stretch:</b> forearm on the door frame, elbow at shoulder height, step through until you feel the chest stretch. 30 s each side, twice.</li>
+      <li><b>Kneeling hip flexor stretch:</b> one knee down, squeeze the glute of that side and shift forward slightly. 30 s each side, twice.</li>
+      <li><b>Chin tucks:</b> sitting or standing tall, slide your chin straight back to make a double chin, hold 3 s. 10 reps.</li>
+      <li><b>Wall slides:</b> back and arms against a wall, slide arms up and down slowly while keeping contact. 10 reps.</li>
+    </ol>
   </div>
   <div class="note">Add more cardio only if fat loss stalls and steps are already at 10,000. Then add one 30 min session of bike or elliptical, before cutting food further.</div>
 </section>
@@ -349,6 +358,10 @@ A:[
   how:"Cable at the lowest setting, stand side-on. Raise the arm out to shoulder height leading with the elbow, slight bend. Lower in 3 seconds. Left arm first.",
   bad:"Shrugging, swinging, going too heavy. Light weight is normal here.",alt:"Dumbbell lateral raise or lateral raise machine.",
   prog:"All sets at 20 reps, then next pin.",q:"single arm cable lateral raise form",v:"nMCQuV6HE3A"},
+ {n:"Cable face pull",m:"Rear delts, upper back, rotator cuff",s:[2,2,2,1,2],r:"15-20",rest:"1 min",rir:"2",
+  how:"Rope at upper-chest to face height. Pull toward your forehead, elbows high, and finish with hands beside your ears, thumbs pointing back. Squeeze 1 second. Fixes rounded desk posture.",
+  bad:"Going heavy and leaning back, pulling to the chest, shrugging.",alt:"Reverse pec deck, or band pull-apart.",
+  prog:"All sets at 20, then next pin. Keep it light and strict.",q:"cable face pull proper form",v:"0Po47vvj9g4"},
  {n:"Cable rope pushdown",m:"Triceps",s:[2,2,2,1,2],r:"10-15",rest:"1 min",rir:"1-2",
   how:"Elbows pinned at your sides. Push down and spread the rope at the bottom. Wrists straight.",
   bad:"Elbows drifting forward, leaning over the rope.",alt:"Straight-bar or V-bar pushdown.",
@@ -383,6 +396,10 @@ B:[
   how:"Bench at 45 to 60°, arms hanging straight down. Curl one arm at a time, left first, without moving the elbow forward. Lower fully.",
   bad:"Swinging, elbows drifting forward, cutting the bottom of the rep.",alt:"EZ-bar cable curl (easier on the wrists).",
   prog:"All sets at 15, then +1 to 2 kg.",q:"incline dumbbell curl form"},
+ {n:"Cable face pull",m:"Rear delts, upper back, rotator cuff",s:[2,2,2,1,2],r:"15-20",rest:"1 min",rir:"2",
+  how:"Rope at upper-chest to face height. Pull toward your forehead, elbows high, and finish with hands beside your ears, thumbs pointing back. Squeeze 1 second. Fixes rounded desk posture.",
+  bad:"Going heavy and leaning back, pulling to the chest, shrugging.",alt:"Reverse pec deck, or band pull-apart.",
+  prog:"All sets at 20, then next pin. Keep it light and strict.",q:"cable face pull proper form",v:"0Po47vvj9g4"},
  {n:"Pallof press",m:"Core anti-rotation",s:[2,2,2,1,2],r:"10 each side",rest:"1 min",rir:"Controlled",
   how:"Cable at chest height, stand side-on. Hold the handle at your chest, press straight out, hold 2 seconds, return. Resist the cable pulling you around.",
   bad:"Twisting toward the cable, standing too close.",alt:"Side plank 20 to 30 s.",
@@ -464,7 +481,7 @@ function render(){
   <div class="note">${esc(p.note)}</div>
   <div class="panel"><h3>Warm-up</h3><p>${esc(p.warm)}</p></div>
   ${exCards(p)}
-  <div class="panel"><h3>Finish</h3><p>${esc(p.finish)}</p></div>${rules}`;
+  <div class="panel"><h3>Finish</h3><p>${esc(p.finish)}</p><p class="small muted">Then the 5-minute daily mobility routine (Walking tab).</p></div>${rules}`;
  c.querySelectorAll("input[data-k]").forEach(inp=>inp.addEventListener("input",()=>store.set(inp.dataset.k,inp.value)));
  const s=document.querySelector('.day[aria-selected="true"]');if(s)s.scrollIntoView({block:"nearest",inline:"center"});
 }
