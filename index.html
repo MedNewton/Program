@@ -70,6 +70,8 @@ select{font:500 15px var(--body);padding:8px 10px;border-radius:8px;border:1px s
 .day[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .day[aria-selected="true"] .dw,.day[aria-selected="true"] .dm{color:var(--accent-ink)}
 .empty{border:1.5px dashed var(--line);border-radius:12px;padding:28px 16px;text-align:center;color:var(--muted)}
+.vid{position:relative;width:100%;max-width:100%;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:var(--ink)}
+.vid iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .ex{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .ex summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:34px 1fr auto;gap:12px;align-items:center;padding:14px}
 .ex summary::-webkit-details-marker{display:none}
@@ -330,31 +332,31 @@ A:[
  {n:"Machine chest press",m:"Chest, front delts, triceps",s:[2,3,3,2,3],r:"8-12",rest:"2 min",rir:"2",
   how:"Seat so handles line up with mid-chest. Shoulder blades back and down into the pad, slight arch. Press without letting shoulders roll forward.",
   bad:"Seat too high, elbows flared to 90°, short reps.",alt:"Dumbbell flat bench press from week 5.",
-  prog:"All sets at 12 reps at RIR 2, then +2.5 to 5 kg.",q:"machine chest press proper form"},
+  prog:"All sets at 12 reps at RIR 2, then +2.5 to 5 kg.",q:"machine chest press proper form",v:"B-zyH8OTlsg"},
  {n:"Lat pulldown",m:"Lats, upper back, biceps",s:[2,3,3,2,3],r:"8-12",rest:"2 min",rir:"2",
   how:"Grip a bit wider than shoulders, or the neutral V-handle if wrists complain. Chest up, lean back 10 to 15°. Drive elbows down to your back pockets until the bar reaches upper chest.",
   bad:"Pulling with arms only, swinging the torso, bar behind the neck.",alt:"Machine pulldown with separate handles, left arm leads.",
-  prog:"3 × 12, then +2.5 to 5 kg.",q:"lat pulldown proper form"},
+  prog:"3 × 12, then +2.5 to 5 kg.",q:"lat pulldown proper form",v:"SALxEARiMkw"},
  {n:"Seated dumbbell shoulder press",m:"Side and front delts, triceps",s:[2,2,2,1,2],r:"8-12",rest:"2 min",rir:"2",
   how:"Bench at 75 to 80°. Dumbbells start at ear level, forearms vertical, palms forward or slightly turned in. Press up and slightly in.",
   bad:"Arching the lower back, dumbbells drifting forward, half reps.",alt:"Machine shoulder press (use it in weeks 1-2).",
-  prog:"2 × 12, then +1 to 2 kg per dumbbell.",q:"seated dumbbell shoulder press form"},
+  prog:"2 × 12, then +1 to 2 kg per dumbbell.",q:"seated dumbbell shoulder press form",v:"WKEl69bIGus"},
  {n:"Leg press",m:"Quads, glutes",s:[2,3,3,2,3],r:"10-15",rest:"2 min",rir:"2",
   how:"Feet shoulder-width, mid-platform. Lower to about 90° at the knee or just before your lower back lifts. Push through the whole foot.",
   bad:"Lower back rounding at the bottom, knees caving in, locking knees hard.",alt:"Hack squat or goblet squat.",
-  prog:"3 × 15, then +10 kg. Legs will progress fastest; that is fine.",q:"leg press proper form"},
+  prog:"3 × 15, then +10 kg. Legs will progress fastest; that is fine.",q:"leg press proper form",v:"K5n2vg3oZa4"},
  {n:"Single-arm cable lateral raise",m:"Side delts",s:[2,2,3,2,3],r:"12-20 each",rest:"1 min",rir:"1-2",
   how:"Cable at the lowest setting, stand side-on. Raise the arm out to shoulder height leading with the elbow, slight bend. Lower in 3 seconds. Left arm first.",
   bad:"Shrugging, swinging, going too heavy. Light weight is normal here.",alt:"Dumbbell lateral raise or lateral raise machine.",
-  prog:"All sets at 20 reps, then next pin.",q:"single arm cable lateral raise form"},
+  prog:"All sets at 20 reps, then next pin.",q:"single arm cable lateral raise form",v:"nMCQuV6HE3A"},
  {n:"Cable rope pushdown",m:"Triceps",s:[2,2,2,1,2],r:"10-15",rest:"1 min",rir:"1-2",
   how:"Elbows pinned at your sides. Push down and spread the rope at the bottom. Wrists straight.",
   bad:"Elbows drifting forward, leaning over the rope.",alt:"Straight-bar or V-bar pushdown.",
-  prog:"2 × 15, then next pin.",q:"cable rope tricep pushdown form"},
+  prog:"2 × 15, then next pin.",q:"cable rope tricep pushdown form",v:"vPeQu_L-1n0"},
  {n:"Dead bug",m:"Deep core",s:[2,2,2,1,2],r:"8 each side",rest:"1 min",rir:"Slow",
   how:"On your back, arms to the ceiling, knees at 90°. Press lower back into the floor, slowly extend opposite arm and leg while exhaling.",
   bad:"Lower back lifting off the floor, rushing.",alt:"Hollow body hold for 20 s.",
-  prog:"Add a 2 s hold at full extension, then hold a light plate.",q:"dead bug exercise proper form"}
+  prog:"Add a 2 s hold at full extension, then hold a light plate.",q:"dead bug exercise proper form",v:"g_BYB0R-4Ws"}
 ],
 B:[
  {n:"Incline dumbbell press",m:"Upper chest, front delts, triceps",s:[2,3,3,2,4],r:"8-12",rest:"2 min",rir:"2",
@@ -448,7 +450,8 @@ function exCards(p){const rir=p.phase===0?"3":null;
    <span class="rx"><b>${sets} × ${esc(e.r)}</b>RIR ${esc(r)}</span></summary>
    <div class="exbody"><div class="chips"><span class="chip hot">${sets} sets</span><span class="chip">${esc(e.r)} reps</span><span class="chip">Rest ${esc(e.rest)}</span><span class="chip">RIR ${esc(r)}</span></div>
    <dl class="kv"><dt>Technique</dt><dd>${esc(e.how)}</dd><dt>Avoid</dt><dd>${esc(e.bad)}</dd><dt>Alternative</dt><dd>${esc(e.alt)}</dd><dt>Increase when</dt><dd>${esc(e.prog)}</dd></dl>
-   <div class="actions"><a class="video" href="${url}" target="_blank" rel="noopener">${play}Watch demo</a>
+   ${e.v?`<div class="vid"><iframe src="https://www.youtube-nocookie.com/embed/${e.v}?rel=0&playsinline=1" title="${esc(e.n)} demo" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>`:""}
+   <div class="actions"><a class="video" href="${e.v?"https://www.youtube.com/watch?v="+e.v:url}" target="_blank" rel="noopener">${play}${e.v?"Open on YouTube":"Watch demo"}</a>
    <label class="log" for="w-${id}">Last weight <input id="w-${id}" data-k="w-${id}" inputmode="decimal" placeholder="kg" value="${esc(store.get("w-"+id)||"")}"></label></div></div></details>`}).join("")}
 function render(){
  document.getElementById("days").innerHTML=dates.map(d=>{const k=iso(d);
